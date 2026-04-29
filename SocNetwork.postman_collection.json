@@ -1,0 +1,485 @@
+{
+  "info": {
+    "_postman_id": "749cc9e1-d72a-4ca2-830c-0ef9b5e27380",
+    "name": "SocNetwork",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "387712"
+  },
+  "item": [
+    {
+      "name": "localhost:8080/user/register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Вася\",\n  \"second_name\": \"Смирнец\",\n  \"birthdate\": \"2017-02-01\",\n  \"biography\": \"Хобби, интересы и т.п.\",\n  \"city\": \"Москва\",\n  \"password\": \"пароль1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/user/register",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"527215ad-34dc-443e-ac37-2623cd77288b\",\n  \"password\": \"пароль1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/login",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/user/get/{id}",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/user/get/527215ad-34dc-443e-ac37-2623cd77288b",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "get",
+            "527215ad-34dc-443e-ac37-2623cd77288b"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/friend/set/{userId}",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc2MTkwNDA1LCJpYXQiOjE3NzYxODY4MDUsInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.EP4zTgO_vWKMpLfYtyhOo7VE3cFH_iE4H4iVTLijzKw",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/friend/set/000edd43-06f6-46b0-9532-381cb371c44e",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "friend",
+            "set",
+            "000edd43-06f6-46b0-9532-381cb371c44e"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/friend/delete/{userId}",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc2MTkwNDA1LCJpYXQiOjE3NzYxODY4MDUsInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.EP4zTgO_vWKMpLfYtyhOo7VE3cFH_iE4H4iVTLijzKw",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/friend/delete/000edd43-06f6-46b0-9532-381cb371c44e",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "friend",
+            "delete",
+            "000edd43-06f6-46b0-9532-381cb371c44e"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/post/create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc2MTkwNDA1LCJpYXQiOjE3NzYxODY4MDUsInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.EP4zTgO_vWKMpLfYtyhOo7VE3cFH_iE4H4iVTLijzKw",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lectus mauris ultrices eros in cursus turpis massa.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/post/create",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "post",
+            "create"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/post/get/{postId}",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc2MTkwNDA1LCJpYXQiOjE3NzYxODY4MDUsInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.EP4zTgO_vWKMpLfYtyhOo7VE3cFH_iE4H4iVTLijzKw",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/post/get/d07f9517-c7c4-4992-a177-93eeded71d80",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "post",
+            "get",
+            "d07f9517-c7c4-4992-a177-93eeded71d80"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/post/delete/{postId}",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc2MTkwNDA1LCJpYXQiOjE3NzYxODY4MDUsInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.EP4zTgO_vWKMpLfYtyhOo7VE3cFH_iE4H4iVTLijzKw",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/post/delete/d07f9517-c7c4-4992-a177-93eeded71d80",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "post",
+            "delete",
+            "d07f9517-c7c4-4992-a177-93eeded71d80"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/post/update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc2MTkwNDA1LCJpYXQiOjE3NzYxODY4MDUsInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.EP4zTgO_vWKMpLfYtyhOo7VE3cFH_iE4H4iVTLijzKw",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"d07f9517-c7c4-4992-a177-93eeded71d80\",\n  \"text\": \"Lorem ipsum dolor sit amet.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/post/update",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "post",
+            "update"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/user/search",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/user/search?first_name&last_name=Абр",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "first_name",
+              "value": null
+            },
+            {
+              "key": "last_name",
+              "value": "Абр"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/user/import",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/user/import",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "user",
+            "import"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8081/dialog/{userId}/send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc3NDcxOTE5LCJpYXQiOjE3Nzc0NjgzMTksInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.UjlvW-P8DiFX6ex9huI18S9iK_Rxa6gpndUVav0Da5E",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Привет, как дела?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8081/dialog/014a363e-7a00-48d5-b154-dc024003f3d1/send",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "dialog",
+            "014a363e-7a00-48d5-b154-dc024003f3d1",
+            "send"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8081/dialog/{userId}/list",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc3NDcxOTE5LCJpYXQiOjE3Nzc0NjgzMTksInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.UjlvW-P8DiFX6ex9huI18S9iK_Rxa6gpndUVav0Da5E",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8081/dialog/014a363e-7a00-48d5-b154-dc024003f3d1/list",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "dialog",
+            "014a363e-7a00-48d5-b154-dc024003f3d1",
+            "list"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
