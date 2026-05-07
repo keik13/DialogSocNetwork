@@ -2,8 +2,7 @@ package ru.dialogsocnetwork.service
 
 import ru.dialogsocnetwork.api.{DialogMessage, DialogMessageText}
 import ru.dialogsocnetwork.containers.{Containers, DbMigrationAspect}
-import ru.dialogsocnetwork.db.Db
-import ru.dialogsocnetwork.storage.DialogMessageStorageLive
+import ru.dialogsocnetwork.redis.RedisClientJedis
 import zio.test.*
 import zio.test.TestAspect.sequential
 import zio.{Random, ZIO, ZLayer}
@@ -65,15 +64,10 @@ object DialogMessageServiceSpec extends ZIOSpecDefault:
           )
         )
       }
-    ) @@ DbMigrationAspect.migrateOnce(
-      "filesystem:src/test/resources/db/migration"
-    )()
+    )
   }
     .provideShared(
       DialogMessageServiceLive.layer,
-      DialogMessageStorageLive.layer,
-      Containers.layer,
-      Containers.postgresLayer,
-      Db.dataSourceLayer,
-      Db.quillLayer
+      RedisClientJedis.layer,
+      Containers.redisLayer
     ) @@ sequential

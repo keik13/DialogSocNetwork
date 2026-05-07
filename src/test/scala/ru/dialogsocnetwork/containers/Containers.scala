@@ -1,26 +1,31 @@
 package ru.dialogsocnetwork.containers
 
+import com.redis.testcontainers.RedisContainer
 import zio.{Duration, ULayer, ZIO, ZLayer}
-import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
-import ru.dialogsocnetwork.conf.DbConfig
+import ru.dialogsocnetwork.conf.{DbConfig, RedisCommonConfig}
 
 object Containers:
 
-  val postgresLayer: ULayer[PostgreSQLContainer[Nothing]] = ZLayer.scoped {
-    ZIO.acquireRelease(ZIO.attempt {
-      val c = new PostgreSQLContainer("postgres:14-alpine")
-      c.start()
-      c
-    }.orDie)(c => ZIO.attempt(c.stop()).ignoreLogged)
-  }
+  val redisLayer: ZLayer[Any, Throwable, RedisCommonConfig] = ZLayer.scoped {
+    for
+      container <- ZIO.acquireRelease(
+        ZIO.attemptBlocking {
+          val c =
+            new RedisContainer(DockerImageName.parse("redis:8-alpine"))
+          c.withStartupTimeout(Duration.fromSeconds(120)).start()
+          c
+        }
+      )(c => ZIO.attemptBlocking(c.stop()).orDie)
 
-  val layer: ZLayer[PostgreSQLContainer[Nothing], Throwable, DbConfig] =
-    ZLayer.fromZIO {
-      for
-        container <- ZIO.service[PostgreSQLContainer[Nothing]]
-        jdbcUrl = container.getJdbcUrl
-        username = container.getUsername
-        password = container.getPassword
-      yield DbConfig(jdbcUrl, username, password)
-    }
+      host = container.getHost
+      port = container.getFirstMappedPort
+    yield RedisCommonConfig(
+      "standalone",
+      s"$host:$port",
+      "",
+      5,
+      5000,
+      "master01"
+    )
+  }

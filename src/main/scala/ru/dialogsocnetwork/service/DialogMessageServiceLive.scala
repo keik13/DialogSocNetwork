@@ -1,13 +1,16 @@
 package ru.dialogsocnetwork.service
 
 import ru.dialogsocnetwork.api.{DialogMessage, DialogMessageText}
-import ru.dialogsocnetwork.storage.{DialogMessageRow, DialogMessageStorage}
+import ru.dialogsocnetwork.redis.RedisClient
+import ru.dialogsocnetwork.service.DialogMessageServiceLive.getDialogId
 import zio.{Clock, Task, URLayer, ZLayer}
-import scala.concurrent.duration.SECONDS
-import java.util.UUID
 
-final case class DialogMessageServiceLive(storage: DialogMessageStorage)
-    extends DialogMessageService:
+import java.util.UUID
+import scala.concurrent.duration.SECONDS
+
+final case class DialogMessageServiceLive(
+    redis: RedisClient
+) extends DialogMessageService:
   override def add(
       request: DialogMessageText,
       userId: UUID,
@@ -16,14 +19,13 @@ final case class DialogMessageServiceLive(storage: DialogMessageStorage)
     Clock
       .currentTime(SECONDS)
       .flatMap(ct =>
-        storage.add(
-          DialogMessageRow(
-            0,
-            userId,
-            toUserId,
-            userId.toString + toUserId.toString,
-            request.text,
-            ct
+        redis.xAdd(
+          getDialogId(userId, toUserId),
+          Map(
+            "userId" -> userId.toString,
+            "toUserId" -> toUserId.toString,
+            "text" -> request.text,
+            "createdAt" -> ct.toString
           )
         )
       )
@@ -31,13 +33,23 @@ final case class DialogMessageServiceLive(storage: DialogMessageStorage)
   override def getById(
       userId: UUID,
       toUserId: UUID
-  ): Task[List[DialogMessage]] = storage
-    .getDialog(
-      userId.toString + toUserId.toString,
-      toUserId.toString + userId.toString
+  ): Task[List[DialogMessage]] = redis
+    .xRevRange(getDialogId(userId, toUserId))
+    .map(
+      _.reverse.map(e =>
+        DialogMessage(
+          UUID.fromString(e.getFields.get("userId")),
+          UUID.fromString(e.getFields.get("toUserId")),
+          e.getFields.get("text")
+        )
+      )
     )
-    .map(_.map(r => DialogMessage(r.userId, r.toUserId, r.message)))
 
 object DialogMessageServiceLive:
-  val layer: URLayer[DialogMessageStorage, DialogMessageService] =
+  val layer: URLayer[RedisClient, DialogMessageService] =
     ZLayer.fromFunction(DialogMessageServiceLive.apply _)
+
+  // Генерация детерминированного ID диалога
+  private def getDialogId(userId: UUID, toUserId: UUID): String =
+    if userId.compareTo(toUserId) < 0 then s"${userId}_$toUserId"
+    else s"${toUserId}_$userId"

@@ -7,14 +7,23 @@ final case class RootConfig(
     config: AppConfig
 )
 final case class AppConfig(
-    db: DbConfig,
-    jwt: JwtConfig
+    jwt: JwtConfig,
+    redisCommonConfig: RedisCommonConfig
 )
 
 final case class DbConfig(
     url: String,
     user: String,
     password: String
+)
+
+case class RedisCommonConfig(
+    mode: String,
+    servers: String,
+    password: String,
+    maxAttempts: Int,
+    timeoutMillis: Int,
+    masterName: String
 )
 
 final case class JwtConfig(
@@ -26,7 +35,7 @@ final case class JwtConfig(
 object Configuration:
   import zio.config.typesafe.*
 
-  val layer: Layer[Config.Error, DbConfig with JwtConfig] =
+  val layer: Layer[Config.Error, RedisCommonConfig with JwtConfig] =
     for
       appConfig <- ZLayer.fromZIO(
         TypesafeConfigProvider
@@ -34,6 +43,6 @@ object Configuration:
           .load(deriveConfig[RootConfig])
           .map(_.config)
       )
-      l <- ZLayer.succeed(appConfig.get.db) ++
+      l <- ZLayer.succeed(appConfig.get.redisCommonConfig) ++
         ZLayer.succeed(appConfig.get.jwt)
     yield l

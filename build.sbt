@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
     Test / fork := true,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
     libraryDependencies ++= Seq(
-      "dev.zio" %% "zio" % "2.1.25",
+      "dev.zio" %% "zio" % "2.1.26",
       "dev.zio" %% "zio-http" % "3.8.1",
       "dev.zio" %% "zio-json" % "0.7.44",
       "dev.zio" %% "zio-config-typesafe" % "4.0.7",
@@ -31,11 +31,12 @@ lazy val root = (project in file("."))
       "dev.zio" %% "zio-logging" % "2.5.3",
       "io.getquill" %% "quill-jdbc-zio" % "4.8.6",
       "com.github.jwt-scala" %% "jwt-zio-json" % "11.0.4",
-      "org.postgresql" % "postgresql" % "42.7.10",
+      "org.postgresql" % "postgresql" % "42.7.11",
       "org.flywaydb" % "flyway-core" % "9.22.3",
-      "dev.zio" %% "zio-test" % "2.1.25" % Test,
-      "dev.zio" %% "zio-test-sbt" % "2.1.25" % Test,
-      "org.testcontainers" % "postgresql" % "1.21.4" % Test,
+      "redis.clients" % "jedis" % "7.5.0",
+      "dev.zio" %% "zio-test" % "2.1.26" % Test,
+      "dev.zio" %% "zio-test-sbt" % "2.1.26" % Test,
+      "com.redis" % "testcontainers-redis" % "2.2.4" % Test
     ),
 
     scalacOptions ++= Seq(

@@ -2,7 +2,6 @@ package ru.dialogsocnetwork.server
 
 import ru.dialogsocnetwork.api.{DialogMessageText, DialogMessage, ErrorResponse}
 import ru.dialogsocnetwork.auth.UserInfo
-import ru.dialogsocnetwork.db.DbMigrator
 import ru.dialogsocnetwork.server.DialogSocNetworkServer.parseBody
 import ru.dialogsocnetwork.service.*
 import ru.dialogsocnetwork.util.{InvalidBody, InvalidToken, MissingParams}
@@ -13,7 +12,6 @@ import zio.{IO, URLayer, ZIO, ZLayer}
 import java.util.UUID
 
 final case class DialogSocNetworkServer(
-    migrator: DbMigrator,
     authMiddleware: AuthMiddleware,
     dialogMessageService: DialogMessageService
 ):
@@ -62,14 +60,12 @@ final case class DialogSocNetworkServer(
     .tapError(err => ZIO.logError(err.getMessage))
 
   def start: ZIO[Any, Throwable, Unit] =
-    for
-      _ <- migrator.migrate
-      _ <- run
+    for _ <- run
     yield ()
 
 object DialogSocNetworkServer:
   val layer: URLayer[
-    DbMigrator with DialogMessageService with AuthMiddleware,
+    DialogMessageService with AuthMiddleware,
     DialogSocNetworkServer
   ] =
     ZLayer.fromFunction(DialogSocNetworkServer.apply _)
