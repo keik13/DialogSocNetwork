@@ -14,15 +14,20 @@ import redis.clients.jedis.{
 import ru.dialogsocnetwork.conf.RedisCommonConfig
 import zio.{RLayer, Task, ZIO, ZLayer}
 
+import scala.io.Source
 import scala.jdk.CollectionConverters.{
   ListHasAsScala,
   MapHasAsJava,
-  SetHasAsJava
+  SetHasAsJava,
+  SeqHasAsJava
 }
 
 case class RedisClientJedis(jc: UnifiedJedis) extends RedisClient:
 
-  override def xAdd(dialogId: String, message: Map[String, String]): Task[Unit] =
+  override def xAdd(
+      dialogId: String,
+      message: Map[String, String]
+  ): Task[Unit] =
     ZIO.attemptBlocking(
       jc.xadd(s"dialog:$dialogId", StreamEntryID.NEW_ENTRY, message.asJava)
     )
@@ -31,6 +36,43 @@ case class RedisClientJedis(jc: UnifiedJedis) extends RedisClient:
     ZIO.attemptBlocking(
       jc.xrevrange(s"dialog:$dialogId", "+", "-", 50).asScala.toList
     )
+
+  def xAddFCall(
+      dialogId: String,
+      message: Map[String, String]
+  ): Task[Unit] = fcall("send_message", dialogId :: message.values.toList).unit
+
+  def xRevRangeFCall(dialogId: String): Task[List[List[String]]] =
+    fcall("get_messages", List(dialogId, 50.toString))
+      .map(r =>
+        r.asInstanceOf[java.util.List[java.util.List[Object]]]
+          .asScala
+          .toList
+          .map(r =>
+            r.getLast.asInstanceOf[java.util.List[String]].asScala.toList
+          )
+      )
+
+  private def fcall(func: String, args: List[String]): Task[Any] =
+    ZIO.attemptBlocking(
+      jc.fcall(func, Nil.asJava, args.asJava)
+    )
+
+  override def functionLoad(): Task[String] =
+    for
+      script <- readResourceSafe("dialog.lua")
+      libName <- ZIO.attemptBlocking(jc.functionLoad(script))
+    yield libName
+
+  private def readResourceSafe(fileName: String): Task[String] =
+    ZIO.acquireReleaseWith(
+      ZIO.attempt(getClass.getClassLoader.getResourceAsStream(fileName))
+    )(is => ZIO.succeed(if is != null then is.close())) { is =>
+      ZIO.attempt {
+        if is == null then throw new Exception(s"Файл $fileName не найден")
+        Source.fromInputStream(is).mkString
+      }
+    }
 
   override def close(): Unit = jc.close()
 

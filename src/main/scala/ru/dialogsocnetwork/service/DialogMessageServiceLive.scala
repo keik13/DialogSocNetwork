@@ -45,6 +45,39 @@ final case class DialogMessageServiceLive(
       )
     )
 
+  override def addF(
+      request: DialogMessageText,
+      userId: UUID,
+      toUserId: UUID
+  ): Task[Unit] = Clock
+    .currentTime(SECONDS)
+    .flatMap(ct =>
+      redis.xAddFCall(
+        getDialogId(userId, toUserId),
+        Map(
+          "userId" -> userId.toString,
+          "toUserId" -> toUserId.toString,
+          "text" -> request.text,
+          "createdAt" -> ct.toString
+        )
+      )
+    )
+
+  override def getByIdF(
+      userId: UUID,
+      toUserId: UUID
+  ): Task[List[DialogMessage]] = redis
+    .xRevRangeFCall(getDialogId(userId, toUserId))
+    .map(
+      _.reverse.map(e =>
+        DialogMessage(
+          UUID.fromString(e(1)),
+          UUID.fromString(e(3)),
+          e(5)
+        )
+      )
+    )
+
 object DialogMessageServiceLive:
   val layer: URLayer[RedisClient, DialogMessageService] =
     ZLayer.fromFunction(DialogMessageServiceLive.apply _)

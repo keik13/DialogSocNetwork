@@ -12,5 +12,13 @@ trait DialogMessageService:
       userId: UUID,
       toUserId: UUID
   ): Task[Unit]
+  
+  def addF(
+      request: DialogMessageText,
+      userId: UUID,
+      toUserId: UUID
+  ): Task[Unit]
 
   def getById(userId: UUID, toUserId: UUID): Task[List[DialogMessage]]
+  
+  def getByIdF(userId: UUID, toUserId: UUID): Task[List[DialogMessage]]

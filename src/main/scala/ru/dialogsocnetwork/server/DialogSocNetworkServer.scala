@@ -1,7 +1,8 @@
 package ru.dialogsocnetwork.server
 
-import ru.dialogsocnetwork.api.{DialogMessageText, DialogMessage, ErrorResponse}
+import ru.dialogsocnetwork.api.{DialogMessage, DialogMessageText, ErrorResponse}
 import ru.dialogsocnetwork.auth.UserInfo
+import ru.dialogsocnetwork.redis.RedisClient
 import ru.dialogsocnetwork.server.DialogSocNetworkServer.parseBody
 import ru.dialogsocnetwork.service.*
 import ru.dialogsocnetwork.util.{InvalidBody, InvalidToken, MissingParams}
@@ -13,7 +14,8 @@ import java.util.UUID
 
 final case class DialogSocNetworkServer(
     authMiddleware: AuthMiddleware,
-    dialogMessageService: DialogMessageService
+    dialogMessageService: DialogMessageService,
+    redis: RedisClient
 ):
 
   private val dialogRoutes =
@@ -60,12 +62,15 @@ final case class DialogSocNetworkServer(
     .tapError(err => ZIO.logError(err.getMessage))
 
   def start: ZIO[Any, Throwable, Unit] =
-    for _ <- run
+    for
+      libName <- redis.functionLoad()
+      _ <- ZIO.logInfo(s"$libName loaded to Redis!")
+      _ <- run
     yield ()
 
 object DialogSocNetworkServer:
   val layer: URLayer[
-    DialogMessageService with AuthMiddleware,
+    RedisClient with DialogMessageService with AuthMiddleware,
     DialogSocNetworkServer
   ] =
     ZLayer.fromFunction(DialogSocNetworkServer.apply _)
