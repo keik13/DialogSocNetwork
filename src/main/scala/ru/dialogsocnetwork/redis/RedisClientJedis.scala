@@ -34,7 +34,7 @@ case class RedisClientJedis(jc: UnifiedJedis) extends RedisClient:
 
   override def xRevRange(dialogId: String): Task[List[StreamEntry]] =
     ZIO.attemptBlocking(
-      jc.xrevrange(s"dialog:$dialogId", "+", "-", 50).asScala.toList
+      jc.xrevrange(s"dialog:$dialogId", "+", "-", 500000).asScala.toList
     )
 
   def xAddFCall(
@@ -58,10 +58,10 @@ case class RedisClientJedis(jc: UnifiedJedis) extends RedisClient:
       jc.fcall(func, Nil.asJava, args.asJava)
     )
 
-  override def functionLoad(): Task[String] =
+  override def functionLoadReplace(): Task[String] =
     for
       script <- readResourceSafe("dialog.lua")
-      libName <- ZIO.attemptBlocking(jc.functionLoad(script))
+      libName <- ZIO.attemptBlocking(jc.functionLoadReplace(script))
     yield libName
 
   private def readResourceSafe(fileName: String): Task[String] =

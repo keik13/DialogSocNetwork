@@ -63,7 +63,7 @@ final case class DialogSocNetworkServer(
 
   def start: ZIO[Any, Throwable, Unit] =
     for
-      libName <- redis.functionLoad()
+      libName <- redis.functionLoadReplace()
       _ <- ZIO.logInfo(s"$libName loaded to Redis!")
       _ <- run
     yield ()

@@ -68,7 +68,7 @@ object DialogMessageServiceSpec extends ZIOSpecDefault:
         for
           _ <- TestRandom.setSeed(27)
           redis <- ZIO.service[RedisClient]
-          _ <- redis.functionLoad()
+          _ <- redis.functionLoadReplace()
           service <- ZIO.service[DialogMessageService]
           userId <- Random.nextUUID
           toUserId <- Random.nextUUID
