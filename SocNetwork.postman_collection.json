@@ -415,7 +415,12 @@
         "header": [
           {
             "key": "Authorization",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc3NDcxOTE5LCJpYXQiOjE3Nzc0NjgzMTksInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.UjlvW-P8DiFX6ex9huI18S9iK_Rxa6gpndUVav0Da5E",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzgxMTA0MTk1LCJpYXQiOjE3ODExMDA1OTUsInVzZXJJZCI6ImYxMzA0YzQzLWNlZGItNGY1NS1iNjgxLTNhMTJjMDA5MjZlNSJ9.ny81HcmFP-R0NpPQQ7MVy-VrC3YoaWDXOA9xxAlzZi0",
+            "type": "text"
+          },
+          {
+            "key": "X-Request-ID",
+            "value": "550e8400-e29b-41d4-a716-446655440000",
             "type": "text"
           }
         ],
@@ -444,6 +449,46 @@
       "response": []
     },
     {
+      "name": "localhost:8080/dialog/{userId}/send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzgxMTA0MTk1LCJpYXQiOjE3ODExMDA1OTUsInVzZXJJZCI6ImYxMzA0YzQzLWNlZGItNGY1NS1iNjgxLTNhMTJjMDA5MjZlNSJ9.ny81HcmFP-R0NpPQQ7MVy-VrC3YoaWDXOA9xxAlzZi0",
+            "type": "text"
+          },
+          {
+            "key": "X-Request-ID",
+            "value": "550e8400-e29b-41d4-a716-446655440000",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Привет, как дела?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/dialog/014a363e-7a00-48d5-b154-dc024003f3d1/send",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "dialog",
+            "014a363e-7a00-48d5-b154-dc024003f3d1",
+            "send"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "localhost:8081/dialog/{userId}/list",
       "protocolProfileBehavior": {
         "disableBodyPruning": true
@@ -453,7 +498,12 @@
         "header": [
           {
             "key": "Authorization",
-            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc3NDcxOTE5LCJpYXQiOjE3Nzc0NjgzMTksInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.UjlvW-P8DiFX6ex9huI18S9iK_Rxa6gpndUVav0Da5E",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzgxMTA5MjIzLCJpYXQiOjE3ODExMDU2MjMsInVzZXJJZCI6ImYxMzA0YzQzLWNlZGItNGY1NS1iNjgxLTNhMTJjMDA5MjZlNSJ9.7fIw-p-bDBxVz99m1KrKzVlhMConmFgOMvRk1egVEEE",
+            "type": "text"
+          },
+          {
+            "key": "X-Request-ID",
+            "value": "550e8400-e29b-41d4-a716-446655440000",
             "type": "text"
           }
         ],
@@ -478,6 +528,94 @@
             "list"
           ]
         }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/dialog/{userId}/list",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzgxMTEzNDcwLCJpYXQiOjE3ODExMDk4NzAsInVzZXJJZCI6ImYxMzA0YzQzLWNlZGItNGY1NS1iNjgxLTNhMTJjMDA5MjZlNSJ9.kTrhaAwgSZ9OBkm8yytbESWljM5zpcMTf7rYkkNKPJI",
+            "type": "text"
+          },
+          {
+            "key": "X-Request-ID",
+            "value": "550e8400-e29b-41d4-a716-446655440000",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:8080/dialog/014a363e-7a00-48d5-b154-dc024003f3d1/list",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "dialog",
+            "014a363e-7a00-48d5-b154-dc024003f3d1",
+            "list"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:8080/ws",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTb2NOZXR3b3JrIiwiZXhwIjoxNzc3NDcxOTE5LCJpYXQiOjE3Nzc0NjgzMTksInVzZXJJZCI6IjUyNzIxNWFkLTM0ZGMtNDQzZS1hYzM3LTI2MjNjZDc3Mjg4YiJ9.UjlvW-P8DiFX6ex9huI18S9iK_Rxa6gpndUVav0Da5E",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "ws://ocalhost:8080/ws",
+          "protocol": "ws",
+          "host": [
+            "ocalhost"
+          ],
+          "port": "8080",
+          "path": [
+            "ws"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": []
       },
       "response": []
     }

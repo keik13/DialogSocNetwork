@@ -13,16 +13,18 @@ final case class AuthMiddleware(jwtService: JwtService):
           case Some(Header.Authorization.Bearer(token)) =>
             jwtService
               .verify(token.value.asString)
+              .tapError(err =>
+                ZIO.logError(s"Error Authorization ${err.getMessage}")
+              )
               .mapBoth(
                 _ => Response.unauthorized,
                 userInfo => (request, userInfo)
               )
           case _ =>
-            ZIO.fail(
-              Response.unauthorized.addHeaders(
-                Headers(Header.WWWAuthenticate.Bearer("realm"))
+            ZIO.logError(s"Error Authorization: No Header Authorization") *> ZIO
+              .fail(
+                Response.unauthorized
               )
-            )
       }
     }
 

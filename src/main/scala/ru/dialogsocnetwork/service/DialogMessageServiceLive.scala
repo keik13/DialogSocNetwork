@@ -2,8 +2,9 @@ package ru.dialogsocnetwork.service
 
 import ru.dialogsocnetwork.api.{DialogMessage, DialogMessageText}
 import ru.dialogsocnetwork.redis.RedisClient
+import ru.dialogsocnetwork.server.RequestIdMiddleware.requestId
 import ru.dialogsocnetwork.service.DialogMessageServiceLive.getDialogId
-import zio.{Clock, Task, URLayer, ZLayer}
+import zio.{Clock, Task, URLayer, ZIO, ZLayer}
 
 import java.util.UUID
 import scala.concurrent.duration.SECONDS
@@ -16,34 +17,47 @@ final case class DialogMessageServiceLive(
       userId: UUID,
       toUserId: UUID
   ): Task[Unit] =
-    Clock
-      .currentTime(SECONDS)
-      .flatMap(ct =>
-        redis.xAdd(
-          getDialogId(userId, toUserId),
-          Map(
-            "userId" -> userId.toString,
-            "toUserId" -> toUserId.toString,
-            "text" -> request.text,
-            "createdAt" -> ct.toString
+    for
+      _ <- Clock
+        .currentTime(SECONDS)
+        .flatMap(ct =>
+          redis.xAdd(
+            getDialogId(userId, toUserId),
+            Map(
+              "userId" -> userId.toString,
+              "toUserId" -> toUserId.toString,
+              "text" -> request.text,
+              "createdAt" -> ct.toString
+            )
           )
         )
+      requestId <- requestId
+      _ <- ZIO.logTrace(
+        s"DialogSocNetwork server dialog $toUserId added with X-Request-ID $requestId"
       )
+    yield ()
 
   override def getById(
       userId: UUID,
       toUserId: UUID
-  ): Task[List[DialogMessage]] = redis
-    .xRevRange(getDialogId(userId, toUserId))
-    .map(
-      _.reverse.map(e =>
-        DialogMessage(
-          UUID.fromString(e.getFields.get("userId")),
-          UUID.fromString(e.getFields.get("toUserId")),
-          e.getFields.get("text")
+  ): Task[List[DialogMessage]] =
+    for
+      r <- redis
+        .xRevRange(getDialogId(userId, toUserId))
+        .map(
+          _.reverse.map(e =>
+            DialogMessage(
+              UUID.fromString(e.getFields.get("userId")),
+              UUID.fromString(e.getFields.get("toUserId")),
+              e.getFields.get("text")
+            )
+          )
         )
+      requestId <- requestId
+      _ <- ZIO.logTrace(
+        s"DialogSocNetwork server dialog $toUserId listed with X-Request-ID $requestId"
       )
-    )
+    yield r
 
   override def addF(
       request: DialogMessageText,

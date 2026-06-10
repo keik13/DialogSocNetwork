@@ -33,7 +33,7 @@ lazy val root = (project in file("."))
       "com.github.jwt-scala" %% "jwt-zio-json" % "11.0.4",
       "org.postgresql" % "postgresql" % "42.7.11",
       "org.flywaydb" % "flyway-core" % "9.22.3",
-      "redis.clients" % "jedis" % "7.5.0",
+      "redis.clients" % "jedis" % "7.5.2",
       "dev.zio" %% "zio-test" % "2.1.26" % Test,
       "dev.zio" %% "zio-test-sbt" % "2.1.26" % Test,
       "com.redis" % "testcontainers-redis" % "2.2.4" % Test

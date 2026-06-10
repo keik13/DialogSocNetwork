@@ -4,8 +4,9 @@ import ru.dialogsocnetwork.api.{DialogMessage, DialogMessageText, ErrorResponse}
 import ru.dialogsocnetwork.auth.UserInfo
 import ru.dialogsocnetwork.redis.RedisClient
 import ru.dialogsocnetwork.server.DialogSocNetworkServer.parseBody
+import ru.dialogsocnetwork.server.RequestIdMiddleware.requestId
 import ru.dialogsocnetwork.service.*
-import ru.dialogsocnetwork.util.{InvalidBody, InvalidToken, MissingParams}
+import ru.dialogsocnetwork.util.{InvalidBody, InvalidToken, MissingParams, MissingXRequestId}
 import zio.http.*
 import zio.json.{EncoderOps, JsonDecoder, JsonEncoder}
 import zio.{IO, URLayer, ZIO, ZLayer}
@@ -25,6 +26,10 @@ final case class DialogSocNetworkServer(
           withContext { (user: UserInfo) =>
             for
               e <- parseBody[DialogMessageText](req)
+              requestId <- requestId
+              _ <- ZIO.logTrace(
+                s"DialogSocNetwork server dialog $userId send with X-Request-ID $requestId"
+              )
               r <- dialogMessageService.add(e, user.userId, userId)
             yield Response.ok
           }
@@ -32,26 +37,47 @@ final case class DialogSocNetworkServer(
       Method.GET / "dialog" / uuid("userId") / "list" -> handler {
         (userId: UUID, req: Request) =>
           withContext { (user: UserInfo) =>
-            for r <- dialogMessageService.getById(user.userId, userId)
+            for
+              requestId <- requestId
+              _ <- ZIO.logTrace(
+                s"DialogSocNetwork server dialog $userId list with X-Request-ID $requestId"
+              )
+              r <- dialogMessageService.getById(user.userId, userId)
             yield Response.json(r.toJson)
           }
       }
     )
 
-  private val app = (dialogRoutes @@ authMiddleware.jwtAuthentication)
+  private val app = (dialogRoutes @@ authMiddleware.jwtAuthentication @@ RequestIdMiddleware.requestIdMiddleware)
     .handleErrorZIO {
-      case InvalidBody | InvalidToken | MissingParams =>
-        ZIO.succeed(Response.badRequest)
+      case InvalidBody =>
+        ZIO
+          .logError("InvalidBody")
+          .as(Response.badRequest)
+      case InvalidToken =>
+        ZIO
+          .logError("InvalidToken")
+          .as(Response.badRequest)
+      case MissingParams =>
+        ZIO
+          .logError("MissingParams")
+          .as(Response.badRequest)
+      case MissingXRequestId =>
+        ZIO
+          .logError("MissingXRequestId")
+          .as(Response.badRequest)
+      case err: ErrorResponse =>
+        ZIO
+          .logError(err.message)
+          .as(
+            Response.json(err.toJson).status(Status.InternalServerError)
+          )
       case err: Throwable =>
         ZIO
           .logError(err.getMessage)
           .as(
             Response
-              .json(
-                ru.dialogsocnetwork.api
-                  .ErrorResponse(err.getMessage, "", 0)
-                  .toJson
-              )
+              .json(ErrorResponse(err.getMessage, "", 500).toJson)
               .status(Status.InternalServerError)
           )
     }
