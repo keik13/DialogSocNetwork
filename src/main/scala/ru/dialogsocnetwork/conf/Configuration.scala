@@ -1,14 +1,15 @@
 package ru.dialogsocnetwork.conf
 
 import zio.config.magnolia.{DeriveConfig, deriveConfig}
-import zio.{Config, Layer, ZLayer}
+import zio.{Config, Duration, Layer, ZLayer}
 
 final case class RootConfig(
     config: AppConfig
 )
 final case class AppConfig(
     jwt: JwtConfig,
-    redisCommonConfig: RedisCommonConfig
+    redisCommonConfig: RedisCommonConfig,
+    producerConfig: ProducerConfig
 )
 
 final case class DbConfig(
@@ -32,10 +33,23 @@ final case class JwtConfig(
     expireInSeconds: Int
 )
 
+final case class ProducerConfig(
+    topic: String,
+    bootstrapServers: String,
+    securityProtocol: String,
+    retries: Int,
+    maxBlock: Duration,
+    deliveryTimeout: Duration,
+    requestTimeout: Duration
+)
+
 object Configuration:
   import zio.config.typesafe.*
 
-  val layer: Layer[Config.Error, RedisCommonConfig with JwtConfig] =
+  val layer: Layer[
+    Config.Error,
+    RedisCommonConfig with JwtConfig with ProducerConfig
+  ] =
     for
       appConfig <- ZLayer.fromZIO(
         TypesafeConfigProvider
@@ -44,5 +58,6 @@ object Configuration:
           .map(_.config)
       )
       l <- ZLayer.succeed(appConfig.get.redisCommonConfig) ++
-        ZLayer.succeed(appConfig.get.jwt)
+        ZLayer.succeed(appConfig.get.jwt) ++
+        ZLayer.succeed(appConfig.get.producerConfig)
     yield l

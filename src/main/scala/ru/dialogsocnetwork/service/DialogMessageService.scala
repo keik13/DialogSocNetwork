@@ -22,3 +22,10 @@ trait DialogMessageService:
   def getById(userId: UUID, toUserId: UUID): Task[List[DialogMessage]]
 
   def getByIdF(userId: UUID, toUserId: UUID): Task[List[DialogMessage]]
+
+  def markAsRead(
+      userId: UUID,
+      toUserId: UUID,
+      id: String,
+      msgId: UUID
+  ): Task[Unit]

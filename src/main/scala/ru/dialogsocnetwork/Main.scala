@@ -2,10 +2,12 @@ package ru.dialogsocnetwork
 
 import ru.dialogsocnetwork.auth.JwtServiceLive
 import ru.dialogsocnetwork.conf.Configuration
+import ru.dialogsocnetwork.kafka.{KafkaProducerLive, KafkaSettings}
 import ru.dialogsocnetwork.redis.RedisClientJedis
 import ru.dialogsocnetwork.server.{AuthMiddleware, DialogSocNetworkServer}
 import ru.dialogsocnetwork.service.DialogMessageServiceLive
 import zio.*
+import zio.kafka.producer.Producer
 import zio.logging.{ConsoleLoggerConfig, LogFilter, LogFormat, consoleLogger}
 
 object Main extends ZIOAppDefault:
@@ -32,5 +34,8 @@ object Main extends ZIOAppDefault:
         JwtServiceLive.layer,
         DialogMessageServiceLive.layer,
         RedisClientJedis.layer,
-        AuthMiddleware.layer
+        AuthMiddleware.layer,
+        Producer.live,
+        KafkaProducerLive.layer,
+        KafkaSettings.producerSettingsLayer
       )

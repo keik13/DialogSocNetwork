@@ -8,5 +8,14 @@ import java.util.UUID
 final case class DialogMessageText(text: String) derives JsonDecoder
 
 @jsonMemberNames(SnakeCase)
-final case class DialogMessage(from: UUID, to: UUID, text: String)
-    derives JsonEncoder
+final case class MessageRead(id: String, msgId: UUID) derives JsonDecoder
+
+@jsonMemberNames(SnakeCase)
+final case class DialogMessage(
+    id: String,
+    msgId: UUID,
+    from: UUID,
+    to: UUID,
+    text: String,
+    isRead: Boolean
+) derives JsonEncoder

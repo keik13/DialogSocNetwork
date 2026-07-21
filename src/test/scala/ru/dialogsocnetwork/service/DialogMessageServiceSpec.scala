@@ -1,8 +1,11 @@
 package ru.dialogsocnetwork.service
 
-import ru.dialogsocnetwork.api.{DialogMessage, DialogMessageText}
+import ru.dialogsocnetwork.api.DialogMessageText
 import ru.dialogsocnetwork.containers.Containers
+import ru.dialogsocnetwork.mock.KafkaProducerTest
 import ru.dialogsocnetwork.redis.{RedisClient, RedisClientJedis}
+import ru.dialogsocnetwork.server.RequestId
+import zio.http.RequestStore
 import zio.test.*
 import zio.test.TestAspect.sequential
 import zio.{Random, ZIO, ZLayer}
@@ -17,6 +20,7 @@ object DialogMessageServiceSpec extends ZIOSpecDefault:
     suite("DialogMessageService")(
       test("should add messages to user") {
         for
+          _ <- RequestStore.set(RequestId("uuid"))
           service <- ZIO.service[DialogMessageService]
           userId <- Random.nextUUID
           toUserId <- Random.nextUUID
@@ -45,21 +49,24 @@ object DialogMessageServiceSpec extends ZIOSpecDefault:
           )
           dialog <- service.getById(userId, toUserId)
         yield assertTrue(
-          dialog == List(
-            DialogMessage(
+          dialog.map(m => (m.from, m.to, m.text, m.isRead)) == List(
+            (
               UUID.fromString("b2c8ccb8-191a-4233-9b34-3e3111a4adaf"),
               UUID.fromString("014a363e-7a00-48d5-b154-dc024003f3d1"),
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+              true
             ),
-            DialogMessage(
+            (
               UUID.fromString("014a363e-7a00-48d5-b154-dc024003f3d1"),
               UUID.fromString("b2c8ccb8-191a-4233-9b34-3e3111a4adaf"),
-              "Брат, я ничего не понял, брат."
+              "Брат, я ничего не понял, брат.",
+              false
             ),
-            DialogMessage(
+            (
               UUID.fromString("b2c8ccb8-191a-4233-9b34-3e3111a4adaf"),
               UUID.fromString("014a363e-7a00-48d5-b154-dc024003f3d1"),
-              "Lectus mauris ultrices eros in cursus turpis massa. In fermentum et sollicitudin ac orci."
+              "Lectus mauris ultrices eros in cursus turpis massa. In fermentum et sollicitudin ac orci.",
+              true
             )
           )
         )
@@ -67,6 +74,7 @@ object DialogMessageServiceSpec extends ZIOSpecDefault:
       test("should add messages to user with redis function") {
         for
           _ <- TestRandom.setSeed(27)
+          _ <- RequestStore.set(RequestId("uuid"))
           redis <- ZIO.service[RedisClient]
           _ <- redis.functionLoadReplace()
           service <- ZIO.service[DialogMessageService]
@@ -97,21 +105,24 @@ object DialogMessageServiceSpec extends ZIOSpecDefault:
           )
           dialog <- service.getByIdF(userId, toUserId)
         yield assertTrue(
-          dialog == List(
-            DialogMessage(
+          dialog.map(m => (m.from, m.to, m.text, m.isRead)) == List(
+            (
               UUID.fromString("bb558ab4-68ff-4899-b6f2-70db6580a14d"),
               UUID.fromString("8136aebd-c3ae-41d1-8289-e61c3d81bd55"),
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+              false
             ),
-            DialogMessage(
+            (
               UUID.fromString("8136aebd-c3ae-41d1-8289-e61c3d81bd55"),
               UUID.fromString("bb558ab4-68ff-4899-b6f2-70db6580a14d"),
-              "Брат, я ничего не понял, брат."
+              "Брат, я ничего не понял, брат.",
+              false
             ),
-            DialogMessage(
+            (
               UUID.fromString("bb558ab4-68ff-4899-b6f2-70db6580a14d"),
               UUID.fromString("8136aebd-c3ae-41d1-8289-e61c3d81bd55"),
-              "Lectus mauris ultrices eros in cursus turpis massa. In fermentum et sollicitudin ac orci."
+              "Lectus mauris ultrices eros in cursus turpis massa. In fermentum et sollicitudin ac orci.",
+              false
             )
           )
         )
@@ -121,5 +132,6 @@ object DialogMessageServiceSpec extends ZIOSpecDefault:
     .provideShared(
       DialogMessageServiceLive.layer,
       RedisClientJedis.layer,
-      Containers.redisLayer
+      Containers.redisLayer,
+      KafkaProducerTest.layer
     ) @@ sequential

@@ -9,7 +9,17 @@ trait RedisClient extends AutoCloseable:
 
   def xAdd(dialogId: String, message: Map[String, String]): Task[Unit]
 
+  def hSet(dialogId: String, message: Map[String, String]): Task[Unit]
+
+  def hGet(dialogId: String, userId: String): Task[Option[String]]
+
   def xRevRange(dialogId: String): Task[List[StreamEntry]]
+
+  def xRange(
+      dialogId: String,
+      oldMsgId: String,
+      newMsgId: String
+  ): Task[List[StreamEntry]]
 
   def functionLoadReplace(): Task[String]
 

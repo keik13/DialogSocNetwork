@@ -29,6 +29,7 @@ lazy val root = (project in file("."))
       "dev.zio" %% "zio-config-typesafe" % "4.0.7",
       "dev.zio" %% "zio-config-magnolia" % "4.0.7",
       "dev.zio" %% "zio-logging" % "2.5.3",
+      "dev.zio" %% "zio-kafka" % "3.6.0",
       "io.getquill" %% "quill-jdbc-zio" % "4.8.6",
       "com.github.jwt-scala" %% "jwt-zio-json" % "11.0.4",
       "org.postgresql" % "postgresql" % "42.7.11",

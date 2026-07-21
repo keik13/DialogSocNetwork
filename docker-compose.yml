@@ -10,7 +10,24 @@ services:
     
   dialogsocnetwork:
     ports:
-      - "8080:8080"
+      - "8081:8081"
     image: dialogsocnetwork:latest
     depends_on:
       - redis
+  
+  kafka:
+    image: wurstmeister/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 0
+      KAFKA_LISTENERS: INNER://kafka:9093,EXTERNAL://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: INNER://kafka:9093,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INNER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INNER
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "soc_network_saga_event:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper

@@ -32,9 +32,31 @@ case class RedisClientJedis(jc: UnifiedJedis) extends RedisClient:
       jc.xadd(s"dialog:$dialogId", StreamEntryID.NEW_ENTRY, message.asJava)
     )
 
+  override def hSet(
+      dialogId: String,
+      message: Map[String, String]
+  ): Task[Unit] =
+    ZIO.attemptBlocking(
+      jc.hset(s"dialog:$dialogId:last_read", message.asJava)
+    )
+
+  override def hGet(dialogId: String, userId: String): Task[Option[String]] =
+    ZIO.attemptBlocking(
+      Option(jc.hget(s"dialog:$dialogId:last_read", userId))
+    )
+
   override def xRevRange(dialogId: String): Task[List[StreamEntry]] =
     ZIO.attemptBlocking(
-      jc.xrevrange(s"dialog:$dialogId", "+", "-", 500000).asScala.toList
+      jc.xrevrange(s"dialog:$dialogId", "+", "-", 50).asScala.toList
+    )
+
+  override def xRange(
+      dialogId: String,
+      oldMsgId: String,
+      newMsgId: String
+  ): Task[List[StreamEntry]] =
+    ZIO.attemptBlocking(
+      jc.xrange(s"dialog:$dialogId", oldMsgId, newMsgId).asScala.toList
     )
 
   def xAddFCall(
