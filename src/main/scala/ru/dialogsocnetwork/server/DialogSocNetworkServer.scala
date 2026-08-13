@@ -77,8 +77,10 @@ final case class DialogSocNetworkServer(
     )
 
   private val app =
-    (dialogRoutes @@ authMiddleware.jwtAuthentication @@ RequestIdMiddleware.requestIdMiddleware @@ Middleware
-      .metrics())
+    (dialogRoutes
+      @@ authMiddleware.jwtAuthentication
+      @@ RequestIdMiddleware.requestIdMiddleware
+      @@ Middleware.metrics())
       .handleErrorZIO {
         case InvalidBody =>
           ZIO
