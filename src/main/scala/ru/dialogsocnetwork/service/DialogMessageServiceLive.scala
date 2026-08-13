@@ -88,7 +88,9 @@ final case class DialogMessageServiceLive(
         UUID.fromString(e.getFields.get("userId")),
         UUID.fromString(e.getFields.get("toUserId")),
         e.getFields.get("text"),
-        UUID.fromString(e.getFields.get("userId")) == userId || e.getID.toString <= toUserLastReadId
+        UUID.fromString(
+          e.getFields.get("userId")
+        ) == userId || e.getID.toString <= toUserLastReadId
       )
     )
 

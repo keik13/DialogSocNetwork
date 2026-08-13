@@ -19,6 +19,7 @@ import ru.dialogsocnetwork.util.{
 }
 import zio.http.*
 import zio.json.{EncoderOps, JsonDecoder, JsonEncoder}
+import zio.metrics.connectors.prometheus.PrometheusPublisher
 import zio.{IO, URLayer, ZIO, ZLayer}
 
 import java.util.UUID
@@ -26,7 +27,8 @@ import java.util.UUID
 final case class DialogSocNetworkServer(
     authMiddleware: AuthMiddleware,
     dialogMessageService: DialogMessageService,
-    redis: RedisClient
+    redis: RedisClient,
+    metricsPublisher: PrometheusPublisher
 ):
 
   private val dialogRoutes =
@@ -68,8 +70,15 @@ final case class DialogSocNetworkServer(
       }
     )
 
+  private val metricsRoutes =
+    Routes(
+      Method.GET / "metrics" ->
+        handler(metricsPublisher.get.map(Response.text))
+    )
+
   private val app =
-    (dialogRoutes @@ authMiddleware.jwtAuthentication @@ RequestIdMiddleware.requestIdMiddleware)
+    (dialogRoutes @@ authMiddleware.jwtAuthentication @@ RequestIdMiddleware.requestIdMiddleware @@ Middleware
+      .metrics())
       .handleErrorZIO {
         case InvalidBody =>
           ZIO
@@ -104,7 +113,7 @@ final case class DialogSocNetworkServer(
       }
 
   private def run: ZIO[Any, Throwable, Nothing] = Server
-    .serve(app)
+    .serve(app ++ metricsRoutes)
     .provide(Server.defaultWithPort(8081))
     .tapError(err => ZIO.logError(err.getMessage))
 
@@ -117,7 +126,10 @@ final case class DialogSocNetworkServer(
 
 object DialogSocNetworkServer:
   val layer: URLayer[
-    RedisClient with DialogMessageService with AuthMiddleware,
+    RedisClient
+      with DialogMessageService
+      with AuthMiddleware
+      with PrometheusPublisher,
     DialogSocNetworkServer
   ] =
     ZLayer.fromFunction(DialogSocNetworkServer.apply _)

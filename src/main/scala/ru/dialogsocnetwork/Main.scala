@@ -9,6 +9,8 @@ import ru.dialogsocnetwork.service.DialogMessageServiceLive
 import zio.*
 import zio.kafka.producer.Producer
 import zio.logging.{ConsoleLoggerConfig, LogFilter, LogFormat, consoleLogger}
+import zio.metrics.connectors.{MetricsConfig, prometheus}
+import zio.metrics.jvm.DefaultJvmMetrics
 
 object Main extends ZIOAppDefault:
 
@@ -37,5 +39,12 @@ object Main extends ZIOAppDefault:
         AuthMiddleware.layer,
         Producer.live,
         KafkaProducerLive.layer,
-        KafkaSettings.producerSettingsLayer
+        KafkaSettings.producerSettingsLayer,
+        // The prometheus reporting layer
+        prometheus.prometheusLayer,
+        prometheus.publisherLayer,
+        // Interval for polling metrics
+        ZLayer.succeed(MetricsConfig(5.seconds)),
+        // Default JVM Metrics
+        DefaultJvmMetrics.liveV2.unit
       )
