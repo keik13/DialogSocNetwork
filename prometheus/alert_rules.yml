@@ -1,0 +1,10 @@
+groups:
+  - name: ExampleAlertGroup
+    rules:
+      - alert: HighRequestLatency
+        expr: http_request_duration_seconds_bucket{le="1"} > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High request latency detected"

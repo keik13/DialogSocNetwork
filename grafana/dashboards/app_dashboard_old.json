@@ -1,0 +1,56 @@
+{
+  "id": null,
+  "uid": "app-dashboard",
+  "title": "App Dashboard",
+  "timezone": "utc",
+  "schemaVersion": 16,
+  "version": 1,
+  "panels": [
+    {
+      "type": "graph",
+      "title": "HTTP Requests Total",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total[1m])) by (path)",
+          "legendFormat": "{{path}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 8
+      },
+      "lines": true,
+      "legend": {
+        "show": true,
+        "alignAsTable": true,
+        "rightSide": true
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Request Duration (Histogram)",
+      "targets": [
+        {
+          "expr": "sum(rate(request_duration_seconds_bucket[1m])) by (le)",
+          "legendFormat": "le {{le}}",
+          "refId": "B"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 8
+      },
+      "lines": true,
+      "legend": {
+        "show": true,
+        "alignAsTable": true,
+        "rightSide": true
+      }
+    }
+  ]
+}
